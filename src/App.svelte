@@ -12,8 +12,8 @@
   let gainNode: GainNode;
   let sineWaveOscillator: OscillatorNode;
 
-  let isMouseDown = false;
-  let mousePos = { x: 0, y: 0 };
+  let isPointerDown = false;
+  let pointerPos = { x: 0, y: 0 };
 
   const render = (timestamp: number) => {
     if (!ctx) return;
@@ -37,14 +37,20 @@
       ctx.stroke();
     }
 
-    if (isMouseDown) {
+    if (isPointerDown) {
       ctx.strokeStyle = "rgba(0, 0, 0, 0.4)";
       ctx.beginPath();
-      ctx.arc(mousePos.x, mousePos.y, (timestamp % 16) + 10, 0, Math.PI * 2);
+      ctx.arc(
+        pointerPos.x,
+        pointerPos.y,
+        (timestamp % 16) + 10,
+        0,
+        Math.PI * 2,
+      );
       ctx.stroke();
 
       ctx.beginPath();
-      ctx.arc(mousePos.x, mousePos.y, 10, 0, Math.PI * 2);
+      ctx.arc(pointerPos.x, pointerPos.y, 10, 0, Math.PI * 2);
       ctx.stroke();
     }
 
@@ -79,24 +85,24 @@
       canvas.height = window.innerHeight;
     };
 
-    const handleMouseDown = () => {
-      isMouseDown = true;
+    const handlePointerDown = () => {
+      isPointerDown = true;
     };
 
-    const handleMouseUp = () => {
-      isMouseDown = false;
+    const handlePointerUp = () => {
+      isPointerDown = false;
       gainNode.gain.setTargetAtTime(0, audioCtx.currentTime, 0);
     };
 
-    const handleMouseMove = (event: MouseEvent) => {
-      mousePos = { x: event.clientX, y: event.clientY };
+    const handlePointerMove = (event: MouseEvent) => {
+      pointerPos = { x: event.clientX, y: event.clientY };
 
-      if (isMouseDown) {
+      if (isPointerDown) {
         const diagnonal = Math.hypot(canvas.width, canvas.height);
 
         const distance = Math.hypot(
-          mousePos.x - canvas.width / 2,
-          mousePos.y - canvas.height / 2,
+          pointerPos.x - canvas.width / 2,
+          pointerPos.y - canvas.height / 2,
         );
 
         gainNode.gain.setTargetAtTime(
@@ -107,23 +113,24 @@
 
         const pan = Math.max(
           -1,
-          Math.min(1, Math.max(-1, 1 - (mousePos.x / canvas.width) * 2)),
+          Math.min(1, Math.max(-1, 1 - (pointerPos.x / canvas.width) * 2)),
         ); // -1 (left) to 1 (right)
         stereoNode.pan.setTargetAtTime(pan, audioCtx.currentTime, 0.01);
       }
     };
 
     window.addEventListener("resize", resizeCanvas);
-    window.addEventListener("mousedown", handleMouseDown);
-    window.addEventListener("mouseup", handleMouseUp);
-    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("pointerdown", handlePointerDown);
+    window.addEventListener("pointerup", handlePointerUp);
+    window.addEventListener("pointermove", handlePointerMove);
     resizeCanvas();
     render(0);
 
     return () => {
       window.removeEventListener("resize", resizeCanvas);
-      window.removeEventListener("mousedown", handleMouseDown);
-      window.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener("pointerdown", handlePointerDown);
+      window.removeEventListener("pointerup", handlePointerUp);
+      window.removeEventListener("pointermove", handlePointerMove);
 
       sineWaveOscillator.stop();
       sineWaveOscillator.disconnect();
