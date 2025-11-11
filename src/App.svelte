@@ -94,7 +94,7 @@
       gainNode.gain.setTargetAtTime(0, audioCtx.currentTime, 0);
     };
 
-    const handlePointerMove = (event: MouseEvent) => {
+    const handlePointerMove = (event: PointerEvent) => {
       pointerPos = { x: event.clientX, y: event.clientY };
 
       if (isPointerDown) {
@@ -140,7 +140,7 @@
 </script>
 
 <main class="w-full h-full bg-gray-300 p-0 m-0">
-  <canvas id="visualizer" class="w-full h-full"></canvas>
+  <canvas id="visualizer" class="w-full h-full touch-none"></canvas>
   <button
     class="w-full h-full flex items-center justify-center absolute top-0 left-0 text-black text-2xl"
     on:mousedown={startAudioContext}
