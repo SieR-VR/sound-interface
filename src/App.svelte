@@ -2,6 +2,7 @@
   import "./app.css";
   import { onMount } from "svelte";
 
+  let startButton: HTMLButtonElement;
   let canvas: HTMLCanvasElement;
   let ctx: CanvasRenderingContext2D;
 
@@ -50,10 +51,7 @@
     requestAnimationFrame(render);
   };
 
-  onMount(() => {
-    canvas = document.getElementById("visualizer") as HTMLCanvasElement;
-    ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
-
+  const startAudioContext = (event: MouseEvent) => {
     audioCtx = new AudioContext();
     stereoNode = audioCtx.createStereoPanner();
     stereoNode.connect(audioCtx.destination);
@@ -67,6 +65,14 @@
     sineWaveOscillator.frequency.setValueAtTime(220, audioCtx.currentTime);
     sineWaveOscillator.connect(gainNode);
     sineWaveOscillator.start();
+
+    startButton.style.display = "none";
+    event.stopPropagation();
+  };
+
+  onMount(() => {
+    canvas = document.getElementById("visualizer") as HTMLCanvasElement;
+    ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 
     const resizeCanvas = () => {
       canvas.width = window.innerWidth;
@@ -125,6 +131,13 @@
 
 <main class="w-full h-full bg-gray-300 p-0 m-0">
   <canvas id="visualizer" class="w-full h-full"></canvas>
+  <button
+    class="w-full h-full flex items-center justify-center absolute top-0 left-0 text-black text-2xl"
+    on:mousedown={startAudioContext}
+    bind:this={startButton}
+  >
+    Start
+  </button>
 </main>
 
 <style>
