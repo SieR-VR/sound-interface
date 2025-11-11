@@ -105,7 +105,10 @@
           0.01,
         );
 
-        const pan = 1 - (mousePos.x / canvas.width) * 2; // -1 (left) to 1 (right)
+        const pan = Math.max(
+          -1,
+          Math.min(1, Math.max(-1, 1 - (mousePos.x / canvas.width) * 2)),
+        ); // -1 (left) to 1 (right)
         stereoNode.pan.setTargetAtTime(pan, audioCtx.currentTime, 0.01);
       }
     };
